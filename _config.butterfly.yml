@@ -20,6 +20,7 @@ menu:
   时间轴: /archives/ || fas fa-archive
   标签: /tags/ || fas fa-tags
   分类: /categories/ || fas fa-folder-open
+  说说: /artitalk/ || far fa-comments
   清单||fa fa-heartbeat:
     音乐: /music/ || fas fa-music
     照片: /Gallery/ || fas fa-images
@@ -54,7 +55,7 @@ copy:
 social:
   fab fa-github: https://github.com/L1atte || Github
   fas fa-envelope: mailto:l1atte@qq.com || Email
-  fal fa-youtube: https://space.bilibili.com/20694919 || Bilibili
+  iconfont icon-bilibili-tv: https://space.bilibili.com/20694919 || Bilibili
 
 # search (搜索)
 # --------------------------------------
@@ -95,17 +96,17 @@ favicon: /img/favicon.png
 
 # Avatar (頭像)
 avatar:
-  img: '/img/taylor.jpg'
+  img: "/img/taylor.jpg"
   effect: true
 
 # Disable all banner image
 disable_top_img: false
 
 # The banner image of home page
-index_img: '/img/蝴蝶忍.jpg'
+index_img: "/img/蝴蝶忍.jpg"
 
 # If the banner of page not setting, it will show the top_img
-default_top_img: 
+default_top_img:
 
 # The banner image of archive page
 archive_img:
@@ -148,7 +149,7 @@ error_img:
 # A simple 404 page
 error_404:
   enable: true
-  subtitle: 'Page Not Found'
+  subtitle: "Page Not Found"
   background: https://i.loli.net/2020/05/19/aKOcLiyPl2JQdFD.png
 
 post_meta:
@@ -547,7 +548,7 @@ canvas_fluttering_ribbon:
 # https://github.com/hustcc/canvas-nest.js
 canvas_nest:
   enable: false
-  color: '0,0,255' #color of lines, default: '0,0,0'; RGB values: (R,G,B).(note: use ',' to separate.)
+  color: "0,0,255" #color of lines, default: '0,0,0'; RGB values: (R,G,B).(note: use ',' to separate.)
   opacity: 0.7 # the opacity of line (0~1), default: 0.5.
   zIndex: -1 # z-index property of the background, default: -1.
   count: 99 # the number of lines, default: 99.
@@ -592,7 +593,7 @@ beautify:
   enable: true
   field: post # site/post
   title-prefix-icon: '\f0c1'
-  title-prefix-icon-color: '#F47466'
+  title-prefix-icon-color: "#F47466"
 
 # Global font settings
 # Don't modify the following settings unless you know how they work (非必要不要修改)
@@ -723,9 +724,9 @@ translate:
   # Time delay
   translateDelay: 0
   # The text of the button when the language is Simplified Chinese
-  msgToTraditionalChinese: '繁'
+  msgToTraditionalChinese: "繁"
   # The text of the button when the language is Traditional Chinese
-  msgToSimplifiedChinese: '簡'
+  msgToSimplifiedChinese: "簡"
 
 # Read Mode (閲讀模式)
 readmode: true
@@ -801,8 +802,8 @@ aplayerInject:
 snackbar:
   enable: false
   position: bottom-left
-  bg_light: '#49b1f5' # The background color of Toast Notification in light mode
-  bg_dark: '#121212' # The background color of Toast Notification in dark mode
+  bg_light: "#49b1f5" # The background color of Toast Notification in light mode
+  bg_dark: "#121212" # The background color of Toast Notification in dark mode
 
 # https://instant.page/
 # prefetch (預加載)
@@ -845,7 +846,7 @@ css_prefix: true
 # 插入代码到头部 </head> 之前 和 底部 </body> 之前
 inject:
   head:
-    # - <link rel="stylesheet" href="/xxx.css">
+    <link rel="stylesheet" href="//at.alicdn.com/t/font_2793989_gqx0a0rtlvc.css">
   bottom:
     # - <script src="xxxx"></script>
 
@@ -937,3 +938,16 @@ CDN:
   prismjs_js: https://cdn.jsdelivr.net/npm/prismjs/prism.min.js
   prismjs_lineNumber_js: https://cdn.jsdelivr.net/npm/prismjs/plugins/line-numbers/prism-line-numbers.min.js
   prismjs_autoloader: https://cdn.jsdelivr.net/npm/prismjs/plugins/autoloader/prism-autoloader.min.js
+
+# talk
+artitalk:
+  enable: true
+  appId: 'vdDMXSRSRUYzOd891DUmFK7j-MdYXbMMI'
+  appKey: 'qmuWcdvyXB77p6U67ek0yrMO'
+  path:
+  js:
+  option:
+    lang: zh
+  front_matter:
+    aside: false # 关闭侧边栏
+    comments: true # 关闭评论
