@@ -486,9 +486,9 @@ site_verification:
 
 theme_color:
   enable: true
-  main: "#7B68EE"
+  main: "#9C9CDD"
   paginator: "#00c4b6"
-  button_hover: "#FF7242"
+  button_hover: "#1B1021"
   text_selection: "#00c4b6"
   link_color: "#99a9bf"
   meta_color: "#858585"
@@ -948,6 +948,8 @@ artitalk:
   js:
   option:
     lang: zh
+    color1: "#949495"
+    color2: "#6b6f59"
   front_matter:
     aside: false # 关闭侧边栏
     comments: true # 关闭评论

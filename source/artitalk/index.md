@@ -12,6 +12,6 @@ comments: 'false'
 <script>
 new Artitalk({
     appId: 'vdDMXSRSRUYzOd891DUmFK7j-MdYXbMMI', 
-    appKey: 'qmuWcdvyXB77p6U67ek0yrMO' 
+    appKey: 'qmuWcdvyXB77p6U67ek0yrMO',
 })
 </script>
