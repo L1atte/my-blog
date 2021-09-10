@@ -3,15 +3,16 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "build": "hexo clean && hexo g && hexo d",
+    "build": "hexo clean && hexo generate && gulp && hexo d",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
-    "server": "hexo clean && hexo generate && hexo server"
+    "serve": "hexo clean && hexo generate && gulp && hexo server"
   },
   "hexo": {
     "version": "5.4.0"
   },
   "dependencies": {
+    "gulp": "^4.0.2",
     "hexo": "^5.0.0",
     "hexo-butterfly-artitalk": "^1.0.3",
     "hexo-deployer-git": "^3.0.0",
@@ -29,5 +30,11 @@
     "hexo-theme-butterfly": "^3.8.3",
     "hexo-theme-landscape": "^0.0.3",
     "hexo-wordcount": "^6.0.1"
+  },
+  "devDependencies": {
+    "gulp-clean-css": "^4.3.0",
+    "gulp-html-minifier-terser": "^6.0.1",
+    "gulp-htmlclean": "^2.7.22",
+    "gulp-terser": "^2.0.1"
   }
 }
