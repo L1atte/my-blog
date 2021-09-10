@@ -20,7 +20,7 @@ menu:
   时间轴: /archives/ || fas fa-archive
   标签: /tags/ || fas fa-tags
   分类: /categories/ || fas fa-folder-open
-  说说: /artitalk/ || far fa-comments
+  说说: /artitalk/ || fas fa-comments
   清单||fa fa-heartbeat:
     音乐: /music/ || fas fa-music
     照片: /Gallery/ || fas fa-images
@@ -92,7 +92,7 @@ katex:
 # --------------------------------------
 
 # Favicon（網站圖標）
-favicon: /img/favicon.png
+favicon: /img/favicon.jpg
 
 # Avatar (頭像)
 avatar:
