@@ -2,11 +2,13 @@
 title: methods，computed与watch的区别
 date: 2021/9/7
 updated: 2021/9/7
-tags: vue
+tags: Vue
 categories: Vue
+top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/香奈乎1.png
+cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/香奈乎1.png
 ---
 
-**methods，computed与watch的区别**
+# methods，computed与watch的区别
 
 **methods：**
 
