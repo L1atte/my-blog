@@ -6,7 +6,7 @@
     "build": "hexo clean && hexo generate && gulp && hexo d",
     "clean": "hexo clean",
     "deploy": "hexo deploy",
-    "serve": "hexo clean && hexo generate && gulp && hexo server"
+    "dev": "hexo clean && hexo generate && gulp && hexo server"
   },
   "hexo": {
     "version": "5.4.0"
