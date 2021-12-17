@@ -1,5 +1,12 @@
 # my-blog
 
+## 需提前安装hexo-cli 和 gulp
+
+```
+npm install -g hexo-cli
+npm install gulp -g
+```
+
 ## node环境
 
 node： v14.17.3
