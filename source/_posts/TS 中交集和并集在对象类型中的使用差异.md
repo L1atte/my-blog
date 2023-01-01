@@ -4,6 +4,8 @@ date: 2023/1/1
 updated: 2023/1/1
 tags: TypeScript
 categories: TypeScript
+top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor4.jpg
+cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor4.jpg
 ---
 # TS 中交集和并集在对象类型中的使用差异
 

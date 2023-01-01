@@ -4,6 +4,8 @@ date: 2023/1/1
 updated: 2023/1/1
 tags: TypeScript
 categories: TypeScript
+top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor4.jpg
+cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor4.jpg
 ---
 # 深入理解 TypeScript 常用操作符和高级概念
 
