@@ -21,12 +21,12 @@ menu:
   标签: /tags/ || fas fa-tags
   分类: /categories/ || fas fa-folder-open
   说说: /artitalk/ || fas fa-comments
-  清单||fa fa-heartbeat:
-    音乐: /music/ || fas fa-music
-    照片: /Gallery/ || fas fa-images
-    电影: /movies/ || fas fa-video
-  友链: /link/ || fas fa-link
-  关于: /about/ || fas fa-heart
+  # 清单||fa fa-heartbeat:
+  #   音乐: /music/ || fas fa-music
+  #   照片: /Gallery/ || fas fa-images
+  #   电影: /movies/ || fas fa-video
+  # 友链: /link/ || fas fa-link
+  # 关于: /about/ || fas fa-heart
 
 # Hide the child menu items in mobile sidebar
 hide_sidebar_menu_child: true
@@ -97,7 +97,7 @@ favicon: /img/siteIcon/favicon.png
 # Avatar (頭像)
 avatar:
   img: "/img/taylor.jpg"
-  effect: true
+  effect: false
 
 # Disable all banner image
 disable_top_img: false
@@ -131,12 +131,12 @@ category_per_img:
 
 cover:
   # display the cover or not (是否顯示文章封面)
-  index_enable: true
-  aside_enable: true
+  index_enable: false
+  aside_enable: false
   archives_enable: true
   # the position of cover in home page (封面顯示的位置)
   # left/right/both
-  position: both
+  position: left
   # When cover is not set, the default cover is displayed (當沒有設置cover時，默認的封面顯示)
   default_cover:
     # - https://i.loli.net/2020/05/01/gkihqEjXxJ5UZ1C.jpg
@@ -586,7 +586,7 @@ ClickShowText:
 
 # Default display mode (網站默認的顯示模式)
 # light (default) / dark
-display_mode: light
+display_mode: dark
 
 # Beautify (美化頁面顯示)
 beautify:
