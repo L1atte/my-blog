@@ -9,6 +9,12 @@ cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor4.jpg
 ---
 # 关于 ES5 的六种继承
 
+## TL, DR
+
+六种继承方式的总结
+
+![ES5 的五种继承](https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/inherit.png)
+
 ## 原型链继承
 
 ```javascript
@@ -178,3 +184,11 @@ inherit(Child, Parent)
 ```
 
 这里只调用了一次 Parent 构造函数，避免了在 `Child.prototype` 上绑定不必要的属性（像组合继承那样），而且原型链依然保持不变，因此 `instanceof` 和 `isPrototypeOf()` 正常有效，寄生式组合继承可以算是引用类型继承的最佳模式
+
+
+
+引用文章
+
+- [图解JS中的六种继承：原型链、盗用构造函数、组合继承、原型式继承、寄生继承、组合寄生继承](https://juejin.cn/post/7028960476025323551)
+- JavaScript 高级程序设计 第四版
+
