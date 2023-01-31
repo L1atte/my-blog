@@ -6,6 +6,7 @@ tags: TypeScript
 categories: TypeScript
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor4.jpg
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor4.jpg
+description: TS 学习总结
 ---
 # 深入理解 TypeScript 常用操作符和高级概念
 

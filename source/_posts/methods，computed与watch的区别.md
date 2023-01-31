@@ -6,6 +6,7 @@ tags: Vue
 categories: Vue
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/香奈乎1.png
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/香奈乎1.png
+description: ' '
 ---
 
 # methods，computed与watch的区别

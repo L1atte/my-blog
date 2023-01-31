@@ -6,6 +6,7 @@ tags: JavaScript
 categories: JavaScript
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/碳治郎1.png
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/碳治郎1.png
+description: ' '
 ---
 
 # 寿司🍣 Promise 之 API (all,  allSettled, any, race, resolve, reject)

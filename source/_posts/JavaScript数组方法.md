@@ -6,6 +6,7 @@ tags: JavaScript
 categories: JavaScript
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/蝴蝶忍4.jpg
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/蝴蝶忍4.jpg
+description: API 整理
 ---
 
 # JavaScript数组方法

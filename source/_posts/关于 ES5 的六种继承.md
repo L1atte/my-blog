@@ -6,6 +6,7 @@ tags: JavaScript
 categories: JavaScript
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor4.jpg
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor4.jpg
+description: JS 继承方式梳理
 ---
 # 关于 ES5 的六种继承
 

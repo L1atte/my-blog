@@ -8,6 +8,7 @@ tags:
 categories: Axios
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/magako.jpg
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/magako.jpg
+description: ' '
 ---
 
 # Axios 中 get 请求时传递特殊字符

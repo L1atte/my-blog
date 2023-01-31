@@ -6,6 +6,7 @@ tags: JavaScript
 categories: JavaScript
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/心海.jpg
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/心海.jpg
+description: ' '
 ---
 
 # 寿司🍣Promise/A+，并通过promise-test测试

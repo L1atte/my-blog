@@ -1,10 +1,3 @@
-/*
- * @Author: Latte
- * @Date: 2021-09-10 17:02:43
- * @LAstEditors: Latte
- * @LastEditTime: 2021-09-10 17:06:24
- * @FilePath: \Latte-Blog\gulpfile.js
- */
 //用到的各个插件
 var gulp = require('gulp');
 var cleanCSS = require('gulp-clean-css');

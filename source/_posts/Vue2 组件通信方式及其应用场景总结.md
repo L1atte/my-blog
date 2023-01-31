@@ -6,6 +6,7 @@ tags: Vue
 categories: Vue
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/善逸1.png
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/善逸1.png
+description: 组件通信方式
 ---
 
 # Vue2 组件通信方式及其应用场景总结

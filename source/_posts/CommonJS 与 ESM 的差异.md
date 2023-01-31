@@ -6,6 +6,7 @@ tags: JavaScript
 categories: JavaScript
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/蝴蝶忍4.jpg
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/蝴蝶忍4.jpg
+description: ' '
 ---
 # CommonJS 与 ES6 Module 的差异
 

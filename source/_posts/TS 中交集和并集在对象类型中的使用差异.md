@@ -6,6 +6,7 @@ tags: TypeScript
 categories: TypeScript
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor4.jpg
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor4.jpg
+description: ' '
 ---
 # TS 中交集和并集在对象类型中的使用差异
 
