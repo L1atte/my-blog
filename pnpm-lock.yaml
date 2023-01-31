@@ -7,6 +7,7 @@ specifiers:
   gulp-htmlclean: ^2.7.22
   gulp-terser: ^2.0.1
   hexo: ^6.3.0
+  hexo-deployer-git: ^3.0.0
   hexo-generator-archive: ^2.0.0
   hexo-generator-category: ^2.0.0
   hexo-generator-index: ^3.0.0
@@ -21,6 +22,7 @@ specifiers:
 dependencies:
   gulp: 4.0.2
   hexo: 6.3.0
+  hexo-deployer-git: 3.0.0
   hexo-generator-archive: 2.0.0
   hexo-generator-category: 2.0.0
   hexo-generator-index: 3.0.0
@@ -1536,6 +1538,20 @@ packages:
       minimist: 1.2.7
       resolve: 1.22.1
       tildify: 2.0.0
+    dev: false
+
+  /hexo-deployer-git/3.0.0:
+    resolution: {integrity: sha512-U2Xewjab+rvUDNTcuYYnOxitkDXL3f5VMUH32jKDHs3OC4YFVGRoEaTTDVHskqr3KRi78Wohjc6BSRHOoG3oxA==}
+    engines: {node: '>=8.6.0'}
+    dependencies:
+      bluebird: 3.7.2
+      chalk: 4.1.2
+      hexo-fs: 3.1.0
+      hexo-util: 2.7.0
+      moment: 2.29.4
+      nunjucks: 3.2.3
+    transitivePeerDependencies:
+      - chokidar
     dev: false
 
   /hexo-front-matter/3.0.0:
