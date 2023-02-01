@@ -123,7 +123,7 @@ sidebar:
   # Manual define the sidebar width. If commented, will be default for:
   # Muse | Mist: 320
   # Pisces | Gemini: 240
-  #width: 300
+  width: 300
 
   # Sidebar Display (only for Muse | Mist), available values:
   #  - post    expand on posts automatically. Default.
@@ -375,9 +375,9 @@ codeblock:
 back2top:
   enable: true
   # Back to top in sidebar.
-  sidebar: true
+  sidebar: false
   # Scroll percent label in b2t button.
-  scrollpercent: true
+  scrollpercent: false
 
 # Reading progress bar
 reading_progress:
