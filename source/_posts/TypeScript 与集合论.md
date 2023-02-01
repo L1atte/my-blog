@@ -1,5 +1,5 @@
 ---
-title: TypeScript 和集合理论的关系
+title: TypeScript 与集合论
 date: 2023/1/18
 updated: 2023/1/18
 tags: TypeScript
@@ -9,7 +9,7 @@ cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor3.jpg
 description: 本文是《TypeScript and Set Theory》的中文翻译，原文链接：https://ivov.dev/notes/typescript-and-set-theory
 ---
 
-# TypeScript 和集合理论的关系
+# TypeScript 与集合论
 
 > 本文是 **TypeScript and Set Theory** 的中文翻译，原文链接：https://ivov.dev/notes/typescript-and-set-theory
 
