@@ -18,8 +18,8 @@ description: TS 学习总结
 
 ```typescript
 interface Bar {
-	name: string;
-	count: number
+  name: string;
+  count: number
 }
 type Foo = keyof Bar; // Foo = 'name' | 'count'
 ```
@@ -30,14 +30,14 @@ type Foo = keyof Bar; // Foo = 'name' | 'count'
 
 ```typescript
 interface Lengthwise {
-	length: number
+  length: number
 }
 
 // 表示传入的泛型 T 接受 Lengthwise 的约束
 // T 必须实现 Lengthwise，换句话说 Lengthwise 这个类型是可以完全赋值给 T
 function loggingIdentity<T extends Lengthwise>(arg: T): T {
-	console.log(arg.length) // ok
-	return arg
+  console.log(arg.length) // ok
+  return arg
 }
 ```
 
@@ -68,7 +68,7 @@ type LockedAccount = {
  
 type UnlockedAccount = CreateMutable<LockedAccount>;
 /** 
-*	type UnlockedAccount = {
+*  type UnlockedAccount = {
 *   id: string;
 *   name: string;
 * }
@@ -116,7 +116,7 @@ type B = { [key in Bar]: string } // Error
 ```typescript
 // Partial<T>
 type MyPartial = {
-	[key in keyof T]?: T[p]
+  [key in keyof T]?: T[p]
 }
 ```
 

@@ -62,28 +62,28 @@ description: ' '
 
 ```javascript
 function template(promises) {
-	if (promises.length === 0) {
-		//  根据不同情况作处理
-	}
-	let result = [],
-		num = 0;
-	return new Promise((resolve, reject) => {
-		const check = () => {
-			if (num === promises.length) {
-				//    根据不同情况调用 resolve 或 reject
-			}
-		};
-		promises.forEach((item) => {
-			Promise.resolve(item).then(
-				(res) => {
-					//  根据不同情况处理 result、num 和调用 resolve、reject、check 方法
-				},
-				(err) => {
-					//  根据不同情况处理 result、num 和调用 resolve、reject、check 方法
-				}
-			);
-		});
-	});
+  if (promises.length === 0) {
+    //  根据不同情况作处理
+  }
+  let result = [],
+    num = 0;
+  return new Promise((resolve, reject) => {
+    const check = () => {
+      if (num === promises.length) {
+        //    根据不同情况调用 resolve 或 reject
+      }
+    };
+    promises.forEach((item) => {
+      Promise.resolve(item).then(
+        (res) => {
+          //  根据不同情况处理 result、num 和调用 resolve、reject、check 方法
+        },
+        (err) => {
+          //  根据不同情况处理 result、num 和调用 resolve、reject、check 方法
+        }
+      );
+    });
+  });
 }
 ```
 
@@ -103,33 +103,33 @@ Promise.all：
 
 ```javascript
 function all(promises) {
-	if (promises.length === 0) {
-		return Promise.resolve([]);
-	}
+  if (promises.length === 0) {
+    return Promise.resolve([]);
+  }
 
-	let result = [],
-		num = 0;
+  let result = [],
+    num = 0;
 
-	return new Promise((resolve, reject) => {
-		const check = () => {
-			if (num === promises.length) {
-				resolve(result);
-			}
-		};
+  return new Promise((resolve, reject) => {
+    const check = () => {
+      if (num === promises.length) {
+        resolve(result);
+      }
+    };
 
-		promises.forEach((item, index) => {
-			Promise.resolve(item).then(
-				(res) => {
-					num++;
-					result[index] = res;
-					check();
-				},
-				(err) => {
-					reject(err);
-				}
-			);
-		});
-	});
+    promises.forEach((item, index) => {
+      Promise.resolve(item).then(
+        (res) => {
+          num++;
+          result[index] = res;
+          check();
+        },
+        (err) => {
+          reject(err);
+        }
+      );
+    });
+  });
 }
 ```
 
@@ -142,35 +142,35 @@ Promise.allSettled：
 
 ```javascript
 function allSettled(promises) {
-	if (promises.length === 0) {
-		return Promise.resolve([]);
-	}
+  if (promises.length === 0) {
+    return Promise.resolve([]);
+  }
 
-	let result = [],
-		sum = 0;
+  let result = [],
+    sum = 0;
 
-	return new Promise((resolve, reject) => {
-		const check = () => {
-			if (num === promises.length) {
-				resolve(result);
-			}
-		};
+  return new Promise((resolve, reject) => {
+    const check = () => {
+      if (num === promises.length) {
+        resolve(result);
+      }
+    };
 
-		promises.forEach((item, index) => {
-			Promise.resolve(item).then(
-				(res) => {
-					result[index] = { status: "fulfilled", value: res };
-					num++;
-					check();
-				},
-				(err) => {
-					result[index] = { status: "rejected", reason: err };
-					num++;
-					check();
-				}
-			);
-		});
-	});
+    promises.forEach((item, index) => {
+      Promise.resolve(item).then(
+        (res) => {
+          result[index] = { status: "fulfilled", value: res };
+          num++;
+          check();
+        },
+        (err) => {
+          result[index] = { status: "rejected", reason: err };
+          num++;
+          check();
+        }
+      );
+    });
+  });
 }
 ```
 
@@ -184,35 +184,35 @@ Promise.any：
 
 ```javascript
 function any(promises) {
-	if (promises.length === 0) {
-		return Promise.reject(
-			new AggregateError("No Promise in Promise.any was resolved")
-		);
-	}
+  if (promises.length === 0) {
+    return Promise.reject(
+      new AggregateError("No Promise in Promise.any was resolved")
+    );
+  }
 
-	let result = [],
-		num = 0;
+  let result = [],
+    num = 0;
 
-	return new Promise((resolve, reject) => {
-		const check = () => {
-			if (num === result.length) {
-				reject(new AggregateError("No Promise in Promise.any was resolved"));
-			}
-		};
+  return new Promise((resolve, reject) => {
+    const check = () => {
+      if (num === result.length) {
+        reject(new AggregateError("No Promise in Promise.any was resolved"));
+      }
+    };
 
-		promises.forEach((item, index) => {
-			Promise.resolve(item).then(
-				(res) => {
-					resolve(res);
-				},
-				(err) => {
-					result[index] = err;
-					num++;
-					check();
-				}
-			);
-		});
-	});
+    promises.forEach((item, index) => {
+      Promise.resolve(item).then(
+        (res) => {
+          resolve(res);
+        },
+        (err) => {
+          result[index] = err;
+          num++;
+          check();
+        }
+      );
+    });
+  });
 }
 ```
 
@@ -222,22 +222,22 @@ Promise.race：返回一个 promise，一旦迭代器中的某个promise解决�
 
 ```javascript
 function race(promises) {
-	if (!promises.length) {
-		throw Error("Promise.race need length");
-	}
+  if (!promises.length) {
+    throw Error("Promise.race need length");
+  }
 
-	return new Promise((resolve, reject) => {
-		promises.forEach((item) => {
-			Promise.resolve(item).then(
-				(res) => {
-					resolve(res);
-				},
-				(err) => {
-					reject(err);
-				}
-			);
-		});
-	});
+  return new Promise((resolve, reject) => {
+    promises.forEach((item) => {
+      Promise.resolve(item).then(
+        (res) => {
+          resolve(res);
+        },
+        (err) => {
+          reject(err);
+        }
+      );
+    });
+  });
 }
 ```
 

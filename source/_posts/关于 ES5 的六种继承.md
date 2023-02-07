@@ -22,11 +22,11 @@ description: JS 继承方式梳理
 function Parent() {}
 Parent.prototype.age = 18
 Parent.prototype.getName = function () {
-	return this.name
+  return this.name
 }
 
 function Child(name) {
-	this.name = name
+  this.name = name
 }
 // 实质：Child.prototype.__proto__ = Parent.prototype
 // 原型链继承行为
@@ -40,21 +40,21 @@ console.log(child.getName()) // "leo"
 
 ### 分析：
 
-​	所有的实例的原型链属性 `[[Prototype]]` 都指向同一个原型对象（`Parent.prototype`），而且这是一个**引用类型**。从而导致数据会被共享
+​  所有的实例的原型链属性 `[[Prototype]]` 都指向同一个原型对象（`Parent.prototype`），而且这是一个**引用类型**。从而导致数据会被共享
 
 ## 构造函数继承
 
 ```javascript
 function Parent(name) {
-	this.name = name
-	this.food = ["水果"]
+  this.name = name
+  this.food = ["水果"]
 }
 Parent.prototype.getName = function () {
-	return this.name
+  return this.name
 }
 function Child(name) {
   // 构造函数继承行为
-	Parent.call(this, name)
+  Parent.call(this, name)
 }
 
 const child1 = new Child("leo")
@@ -70,22 +70,22 @@ console.log(child1.getName()) // TypeError: child1.getName is not a function
 
 ### 分析：
 
-​	使用构造函数继承，可以避免共享原型对象的情况，但是却不能继承父类的方法了。因为父类方法是挂载到原型对象上的，调用构造函数并不会发生原型链指向改动
+​  使用构造函数继承，可以避免共享原型对象的情况，但是却不能继承父类的方法了。因为父类方法是挂载到原型对象上的，调用构造函数并不会发生原型链指向改动
 
 ## 组合继承（常用）
 
 ```javascript
 function Parent(name) {
-	this.name = name
-	this.colors = ["res", "blue", "green"]
+  this.name = name
+  this.colors = ["res", "blue", "green"]
 }
 Parent.prototype.getName = function () {
-	console.log(this.name)
+  console.log(this.name)
 }
 
 // 组合继承行为
 function Child(name) {
-	Parent.call(this, name)
+  Parent.call(this, name)
 }
 // 将 Child.prototype.__proto__ 指向 Parent.prototype，但是多执行了一次 Parent 的构造函数
 Child.prototype = new Parent()
@@ -107,14 +107,14 @@ console.log(child2.__proto__.colors) // ["red", "blue", "green"]，__proto__ 和
 
 ### 分析：
 
-​	解决了共享原型对象、不能继承父类方法的问题，但是由于 `call()` 和 `new Parent()` 调用了两次父构造函数，导致 `__proto__` 和 实例上有重复的属性
+​  解决了共享原型对象、不能继承父类方法的问题，但是由于 `call()` 和 `new Parent()` 调用了两次父构造函数，导致 `__proto__` 和 实例上有重复的属性
 
 ## 原型式继承
 
 ```javascript
 function Parent(name) {
-	this.name = name
-	this.colors = ["res", "blue", "green"]
+  this.name = name
+  this.colors = ["res", "blue", "green"]
 }
 let Child = new Parent()
 
@@ -128,30 +128,30 @@ console.log(child2.colors) //    ["水果", "鸡", "烤肉", "花椒"]，共享�
 
 ### 分析：
 
-​	原型式继承主要是通过 `Object.create()` 来将实例 `child1.__proto__` 指向 `Child` (即 `child1.__proto__ === Child`)
+​  原型式继承主要是通过 `Object.create()` 来将实例 `child1.__proto__` 指向 `Child` (即 `child1.__proto__ === Child`)
 
-​	但这也会面临所有实例的原型链共享同一个对象（`Child`）的问题
+​  但这也会面临所有实例的原型链共享同一个对象（`Child`）的问题
 
 ## 寄生式继承
 
-> ​	与原型式继承比较接近的一种继承方式是寄生式继承。寄生式继承背后的思路类似于寄生构造函数和工厂模式：创建一个实现继承的函数，以某种方式增强对象，然后返回这个对象。
+> ​  与原型式继承比较接近的一种继承方式是寄生式继承。寄生式继承背后的思路类似于寄生构造函数和工厂模式：创建一个实现继承的函数，以某种方式增强对象，然后返回这个对象。
 >
 > ——《JavaScript 高级程序设计》
 
 ```javascript
 // 寄生继承
 function parasiticInheritance(object) {
-	const clone = Object.create(object) // 通过 Object.create 创建一个新对象
-	clone.sayHi = function() { // 以某种方式增强对象
-		console.log('hi')
-	}
-	return clone // 返回这个对象
+  const clone = Object.create(object) // 通过 Object.create 创建一个新对象
+  clone.sayHi = function() { // 以某种方式增强对象
+    console.log('hi')
+  }
+  return clone // 返回这个对象
 }
 ```
 
 ### 分析：
 
-​	寄生继承核心实现是完成继承 + 给实例添加方法
+​  寄生继承核心实现是完成继承 + 给实例添加方法
 
 ## 寄生式组合继承（常用）
 
@@ -161,9 +161,9 @@ function parasiticInheritance(object) {
 
 ```javascript
 function inherit(child, parent) {
-	let prototype = Object.create(parent.prototype)  // 创建对象
-	prototype.constructor = child // 增强对象
-	child.prototype = prototype // 赋值对象
+  let prototype = Object.create(parent.prototype)  // 创建对象
+  prototype.constructor = child // 增强对象
+  child.prototype = prototype // 赋值对象
 }
 ```
 
@@ -173,13 +173,13 @@ function inherit(child, parent) {
 
 ```javascript
 function Parent(name) {
-	this.name = name
-	this.likeFood = ["水果", "鸡", "烤肉"]
+  this.name = name
+  this.likeFood = ["水果", "鸡", "烤肉"]
 }
 
 // 寄生式组合继承行为
 function Child(name) {
-	Parent.call(this, name)
+  Parent.call(this, name)
 }
 inherit(Child, Parent)
 ```

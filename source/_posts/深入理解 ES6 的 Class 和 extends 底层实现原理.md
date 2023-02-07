@@ -28,69 +28,67 @@ ES6 的 extends 的底层实现是 **构造函数调用** 和 **寄生组合式�
 
 ```javascript
 class Person {
-    static instance = null;
-    static getInstance() {
-        return super.instance;
-    }
-	constructor(name, age) {
-        this.name = name;
-        this.age = age;
-    }
-    sayHi() {
-        console.log('hi');
-    }
-    sayHello = () => {
-        console.log('hello');
-    }
-    sayBye = function() {
-        console.log('bye');
-    }
+  static instance = null;
+  static getInstance() {
+    return super.instance;
+  }
+  constructor(name, age) {
+    this.name = name;
+    this.age = age;
+  }
+  sayHi() {
+    console.log("hi");
+  }
+  sayHello = () => {
+    console.log("hello");
+  };
+  sayBye = function () {
+    console.log("bye");
+  };
 }
+
 ```
 
 而经过 babel 处理后的代码是这样的
 
 ```javascript
-'use strict';
+"use strict";
 
-var _createClass = function () { 
-    function defineProperties(target, props) { 
-        for (var i = 0; i < props.length; i++) { 
-            var descriptor = props[i]; 
-            descriptor.enumerable = descriptor.enumerable || false; 
-            descriptor.configurable = true; 
-            if ("value" in descriptor) 
-                descriptor.writable = true; 
-            Object.defineProperty(target, descriptor.key, descriptor); 
-        } 
-    } 
-    return function (Constructor, protoProps, staticProps) { 
-        if (protoProps) 
-            defineProperties(Constructor.prototype, protoProps); 
-        if (staticProps) 
-            defineProperties(Constructor, staticProps); 
-        return Constructor; 
-    }; 
-}();
+var _createClass = (function () {
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+  return function (Constructor, protoProps, staticProps) {
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+})();
 
-function _classCallCheck(instance, Constructor) { 
-    if (!(instance instanceof Constructor)) { 
-        throw new TypeError("Cannot call a class as a function"); 
-    } 
+function _classCallCheck(instance, Constructor) {
+  if (!(instance instanceof Constructor)) {
+    throw new TypeError("Cannot call a class as a function");
+  }
 }
 
-var Person = function () {
+var Person = (function () {
   function Person(name, age) {
     _classCallCheck(this, Person);
 
     this.sayHello = function () {
-      console.log('hello');
+      console.log("hello");
     };
-    
+
     this.sayBye = function () {
-      console.log('bye');
+      console.log("bye");
     };
-    
+
     this.name = name;
     this.age = age;
   }
@@ -102,23 +100,24 @@ var Person = function () {
         key: "sayHi",
         value: function sayHi() {
           console.log("hi");
-        }
-      }
+        },
+      },
     ],
     [
       {
         key: "getInstance",
         value: function getInstance() {
           return _get(_getPrototypeOf(Person), "instance", this);
-        }
-      }
+        },
+      },
     ]
   );
 
   return Person;
-}();
+})();
 
 Person.instance = null;
+
 ```
 
 最外层的 Person 变量被赋值给了一个立即执行函数，立即执行函数里面返回的是 Person 构造函数，实际上最外层的 Person 就是里面的 Person 构造函数
@@ -159,29 +158,27 @@ Person 构造函数中调用了 `_checkCallCheck` 函数，并将 `this` 和自�
 
 ```javascript
 // _createClass 也是一个立即执行函数
-var _createClass = function () {
-  	// 将props属性挂载到目标target上面
-    function defineProperties(target, props) { 
-        for (var i = 0; i < props.length; i++) { 
-            var descriptor = props[i]; 
-            descriptor.enumerable = descriptor.enumerable || false; 
-            descriptor.configurable = true; 
-            if ("value" in descriptor) 
-                descriptor.writable = true; 
-            Object.defineProperty(target, descriptor.key, descriptor); 
-        } 
-    } 
-  	// 这才是真正的 _createClass
-    return function (Constructor, protoProps, staticProps) {
-      	// 如果传入了需要挂载到原型的方法
-        if (protoProps) 
-            defineProperties(Constructor.prototype, protoProps);
-      	// 如果传入了需要挂载到 class 类上的静态方法
-        if (staticProps) 
-            defineProperties(Constructor, staticProps); 
-        return Constructor; 
-    }; 
-}();
+var _createClass = (function () {
+  // 将props属性挂载到目标target上面
+  function defineProperties(target, props) {
+    for (var i = 0; i < props.length; i++) {
+      var descriptor = props[i];
+      descriptor.enumerable = descriptor.enumerable || false;
+      descriptor.configurable = true;
+      if ("value" in descriptor) descriptor.writable = true;
+      Object.defineProperty(target, descriptor.key, descriptor);
+    }
+  }
+  // 这才是真正的 _createClass
+  return function (Constructor, protoProps, staticProps) {
+    // 如果传入了需要挂载到原型的方法
+    if (protoProps) defineProperties(Constructor.prototype, protoProps);
+    // 如果传入了需要挂载到 class 类上的静态方法
+    if (staticProps) defineProperties(Constructor, staticProps);
+    return Constructor;
+  };
+})();
+
 ```
 
 `_createClass` 函数接收三个参数，分别是 `Constructor` （构造函数）、`protoProps`（需要挂载到原型的方法）、`staticProps`(需要挂载到 class 类上的静态方法)
