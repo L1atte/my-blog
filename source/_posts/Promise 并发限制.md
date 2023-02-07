@@ -1,12 +1,12 @@
 ---
 title: Promise 并发限制
 date: 2022/11/14
-updated: 2021/11/14
+updated: 2022/02/08
 tags: JavaScript
 categories: JavaScript
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/弥豆子2.jpg
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/弥豆子2.jpg
-description: Promise 并发池
+description: Promise async-pool
 ---
 
 # Promise 并发限制
@@ -91,7 +91,7 @@ const asyncPool = async (limit, arr, fn) => {
 3. 一旦某一个 promise 的状态发生变更，就将其从 `executing` 中删除，然后再执行循环生成新的 promise，放入`executing` 中
 4. 直到所有的 promise 都被执行完，最后使用 `Promise.all` 返回所有 promise 实例的执行结果
 
-<img src="https://raw.githubusercontent.com/L1atte/PicGo/main/img/async-pool%E6%B5%81%E7%A8%8B.png" alt="async-pool流程" style="zoom:80%;" />
+<img src="https://raw.githubusercontent.com/L1atte/PicGo/main/img/async-pool%E6%B5%81%E7%A8%8B.png" alt="async-pool流程" style="zoom:45%;" />
 
 
 
