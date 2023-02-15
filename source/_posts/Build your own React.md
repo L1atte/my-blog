@@ -31,28 +31,28 @@ fiber 结构的好处是很轻松地找到下一个工作单元（具有 parent�
 
 当我们一直遍历到 rootFiber，意味着 `render`方法结束了
 
-```
-  nextUnitOfWork = {
-    dom: container,
-    props: {
-      children: [element],
-    },
-  }
+```jsx
+nextUnitOfWork = {
+  dom: container,
+  props: {
+    children: [element],
+  },
+};
 
 const fiber = {
-	dom,
-	props: {
-		children,
-	}
+  dom,
+  props: {
+    children,
+  },
+};
+
+if (!fiber.dom) {
+  fiber.dom = createDom(fiber);
 }
 
- if (!fiber.dom) {
-    fiber.dom = createDom(fiber)
-  }
-
-  if (fiber.parent) {
-    fiber.parent.dom.appendChild(fiber.dom)
-  }
+if (fiber.parent) {
+  fiber.parent.dom.appendChild(fiber.dom);
+}
 ```
 
 
@@ -95,17 +95,17 @@ const element = React.createElement(
 
 ```jsx
 function createElement(type, props, ...children) {
-	return {
-		type,
-		props: {
-			...props,
-			children.map(child => {
-      	type child === 'object'
-      		? child
-      		: createTextElement(child)
+  return {
+    type,
+    props: {
+      ...props,
+      children.map(child => {
+        type child === 'object'
+          ? child
+          : createTextElement(child)
     })
-		}
-	}
+    }
+  }
 }
 function createTextElement(text) {
   return {
@@ -145,19 +145,19 @@ function createTextElement(text) {
 ```jsx
 function render(element, container) {
   // 根据 type 创建 dom
-	const dom = element.type == "TEXT_ELEMENT" ? document.createTextNode("") : document.createElement(element.type);
+  const dom = element.type == "TEXT_ELEMENT" ? document.createTextNode("") : document.createElement(element.type);
 
   // 将 props 分配给 dom
-	const isProperty = key => key !== "children";
-	Object.keys(element.props)
-		.filter(isProperty)
-		.forEach(name => {
-			dom[name] = element.props[name];
-		});
+  const isProperty = key => key !== "children";
+  Object.keys(element.props)
+    .filter(isProperty)
+    .forEach(name => {
+      dom[name] = element.props[name];
+    });
 
   // 递归处理 children
-	element.props.children.forEach(child => render(child, dom));
-	// 将 dom 插入 container
+  element.props.children.forEach(child => render(child, dom));
+  // 将 dom 插入 container
   container.appendChild(dom);
 }
 ```
@@ -199,9 +199,7 @@ function performUnitOfWork(nextUnitOfWork) {
 
 > 关于`requestIdleCallback`，这里参考[你应该知道的requestIdleCallback](https://juejin.im/post/5ad71f39f265da239f07e862)。
 
-
-
-> React不再使用requestIdleCallback了，原因见：https://github.com/facebook/react/issues/11171#issuecomment-417349573。
+> React不再使用 `requestIdleCallback`了，原因见：https://github.com/facebook/react/issues/11171#issuecomment-417349573。
 >
 > 现在它使用scheduler：https://github.com/facebook/react/tree/main/packages/scheduler。但对于这个用例来说，它在概念上是一样的。
 
@@ -225,16 +223,16 @@ function performUnitOfWork(nextUnitOfWork) {
 
 ```jsx
 function createDom(fiber) {
-	const dom = fiber.type == "TEXT_ELEMENT" ? document.createTextNode("") : document.createElement(fiber.type);
+  const dom = fiber.type == "TEXT_ELEMENT" ? document.createTextNode("") : document.createElement(fiber.type);
 
-	const isProperty = key => key !== "children";
-	Object.keys(fiber.props)
-		.filter(isProperty)
-		.forEach(name => {
-			dom[name] = fiber.props[name];
-		});
+  const isProperty = key => key !== "children";
+  Object.keys(fiber.props)
+    .filter(isProperty)
+    .forEach(name => {
+      dom[name] = fiber.props[name];
+    });
 
-	return dom;
+  return dom;
 }
 ```
 
@@ -242,12 +240,12 @@ function createDom(fiber) {
 
 ```jsx
 function render(element, container) {
-	nextUnitOfWork = {
-		dom: container,
-		props: {
-			children: [element],
-		},
-	};
+  nextUnitOfWork = {
+    dom: container,
+    props: {
+      children: [element],
+    },
+  };
 }
 let nextUnifOfWork = null
 ```
@@ -279,12 +277,12 @@ function performUnitOfWork(fiber) {
 
 ```jsx
 function performUnitOfWork(fiber) {
-	if(!fiber.dom) {
-		fiber.dom = createDom(fiber)
-	}
-	if(fiber.parent) {
-		fiber.parent.dom.appendChild(fiber.dom)
-	}
+  if(!fiber.dom) {
+    fiber.dom = createDom(fiber)
+  }
+  if(fiber.parent) {
+    fiber.parent.dom.appendChild(fiber.dom)
+  }
   
   
   // TODO create new fibers
@@ -296,32 +294,32 @@ function performUnitOfWork(fiber) {
 
 ```jsx
 function performUnitOfWork(fiber) {
-	if (!fiber.dom) {
-		fiber.dom = createDom(fiber);
-	}
-	if (fiber.parent) {
-		fiber.parent.dom.appendChild(fiber.dom);
-	}
+  if (!fiber.dom) {
+    fiber.dom = createDom(fiber);
+  }
+  if (fiber.parent) {
+    fiber.parent.dom.appendChild(fiber.dom);
+  }
 
-	const elements = fiber.props.children;
-	let prevSibling = null;
-	for (let i = 0; i < elements.length - 1; i++) {
-		const element = elements[i];
-		const newFiber = {
-			type: element.type,
-			props: elements.props,
-			parent: fiber,
-			dom: null,
-		};
+  const elements = fiber.props.children;
+  let prevSibling = null;
+  for (let i = 0; i < elements.length - 1; i++) {
+    const element = elements[i];
+    const newFiber = {
+      type: element.type,
+      props: elements.props,
+      parent: fiber,
+      dom: null,
+    };
 
-		if (i === 0) {
-			fiber.child = newFiber;
-		} else {
-			fiber.sibling = newFiber;
-		}
-		prevSibling = newFiber;
-	}
-	// TODO return next unit of work
+    if (i === 0) {
+      fiber.child = newFiber;
+    } else {
+      fiber.sibling = newFiber;
+    }
+    prevSibling = newFiber;
+  }
+  // TODO return next unit of work
     if (fiber.child) {
     return fiber.child
   }
@@ -345,18 +343,18 @@ function performUnitOfWork(fiber) {
 
 ```jsx
 function performUnitOfWork(fiber) {
-	// 省略前面的代码
-	
-	if (fiber.child) {
-		return fiber.child;
-	}
-	let nextFiber = fiber;
-	while (nextFiber) {
-		if (nextFiber.sibling) {
-			return nextFiber.sibling;
-		}
-		nextFiber = nextFiber.parent;
-	}
+  // 省略前面的代码
+  
+  if (fiber.child) {
+    return fiber.child;
+  }
+  let nextFiber = fiber;
+  while (nextFiber) {
+    if (nextFiber.sibling) {
+      return nextFiber.sibling;
+    }
+    nextFiber = nextFiber.parent;
+  }
 }
 ```
 
