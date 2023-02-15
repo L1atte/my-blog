@@ -4,7 +4,7 @@ date: 2023/2/15
 updated: 2023/2/15
 tags: React
 categories: React
-description: '从零实现简易的 React'
+description: "从零实现简易的 React"
 ---
 
 递归调用 render 渲染节点的缺点：一旦开始 render，直到结束前我们都没有方法中断渲染。当节点树很大的时候，我们可能需要等待很长时间
@@ -55,8 +55,6 @@ if (fiber.parent) {
 }
 ```
 
-
-
 # 从零实现简易的 React
 
 ## The `createElement`Function
@@ -64,7 +62,7 @@ if (fiber.parent) {
 通常，我们在 React 中使用 JSX 定义组件。这实际上会被 babel 转译成调用 `React.createElement( )`的形式
 
 ```jsx
-const element = <h1 title="foo">Hello</h1>
+const element = <h1 title="foo">Hello</h1>;
 ```
 
 `React.createElement( )`会从其参数创建一个对象，所以我们可以直接写成
@@ -99,13 +97,11 @@ function createElement(type, props, ...children) {
     type,
     props: {
       ...props,
-      children.map(child => {
-        type child === 'object'
-          ? child
-          : createTextElement(child)
-    })
-    }
-  }
+      children: children.map(child => {
+        return typeof child === "object" ? child : createTextElement(child);
+      }),
+    },
+  };
 }
 function createTextElement(text) {
   return {
@@ -114,7 +110,17 @@ function createTextElement(text) {
       nodeValue: text,
       children: [],
     },
-  }
+  };
+}
+
+function createTextElement(text) {
+  return {
+    type: "TEXT_ELEMENT",
+    props: {
+      nodeValue: text,
+      children: [],
+    },
+  };
 }
 ```
 
@@ -136,7 +142,7 @@ function createTextElement(text) {
 }
 ```
 
-> React没有包裹原始值，也没有在没有孩子的时候创建空数组，但我们这样做是因为它会简化我们的代码，对于我们的库来说，我们更喜欢简单的代码，而不是性能好的代码。
+> React 没有包裹原始值，也没有在没有孩子的时候创建空数组，但我们这样做是因为它会简化我们的代码，对于我们的库来说，我们更喜欢简单的代码，而不是性能好的代码。
 
 ## The `render` Function
 
@@ -177,31 +183,29 @@ function render(element, container) {
 我们使用`requestIdleCallback`来完成这一调度
 
 ```jsx
-let nextUnitOfWork = null
+let nextUnitOfWork = null;
 
 function workLoop(deadline) {
-  let shouldYield = false
+  let shouldYield = false;
   while (nextUnitOfWork && !shouldYield) {
-    nextUnitOfWork = performUnitOfWork(
-      nextUnitOfWork
-    )
-    shouldYield = deadline.timeRemaining() < 1
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+    shouldYield = deadline.timeRemaining() < 1;
   }
-  requestIdleCallback(workLoop)
+  requestIdleCallback(workLoop);
 }
 
-requestIdleCallback(workLoop)
+requestIdleCallback(workLoop);
 
 function performUnitOfWork(nextUnitOfWork) {
   // TODO
 }
 ```
 
-> 关于`requestIdleCallback`，这里参考[你应该知道的requestIdleCallback](https://juejin.im/post/5ad71f39f265da239f07e862)。
+> 关于`requestIdleCallback`，这里参考[你应该知道的 requestIdleCallback](https://juejin.im/post/5ad71f39f265da239f07e862)。
 
-> React不再使用 `requestIdleCallback`了，原因见：https://github.com/facebook/react/issues/11171#issuecomment-417349573。
+> React 不再使用 `requestIdleCallback`了，原因见：https://github.com/facebook/react/issues/11171#issuecomment-417349573。
 >
-> 现在它使用scheduler：https://github.com/facebook/react/tree/main/packages/scheduler。但对于这个用例来说，它在概念上是一样的。
+> 现在它使用 scheduler：https://github.com/facebook/react/tree/main/packages/scheduler。但对于这个用例来说，它在概念上是一样的。
 
 ## Fibers
 
@@ -214,8 +218,6 @@ function performUnitOfWork(nextUnitOfWork) {
 1. 将`elemenr`添加进`dom`
 2. 在`element.children`里创建`fiber`
 3. 选择下一个工作单元（这也是`fiber`结构的目的之一）
-
-
 
 现在我们用代码来实现
 
@@ -247,24 +249,22 @@ function render(element, container) {
     },
   };
 }
-let nextUnifOfWork = null
+let nextUnitOfWork = null;
 ```
 
 然后，当浏览器就绪时，会通过`requestIdleCallback`调用`workLoop`函数，我们将开始在`root fiber`工作
 
 ```jsx
 function workLoop(deadline) {
-  let shouldYield = false
+  let shouldYield = false;
   while (nextUnitOfWork && !shouldYield) {
-    nextUnitOfWork = performUnitOfWork(
-      nextUnitOfWork
-    )
-    shouldYield = deadline.timeRemaining() < 1
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+    shouldYield = deadline.timeRemaining() < 1;
   }
-  requestIdleCallback(workLoop)
+  requestIdleCallback(workLoop);
 }
 
-requestIdleCallback(workLoop)
+requestIdleCallback(workLoop);
 
 function performUnitOfWork(fiber) {
   // TODO add dom node
@@ -277,14 +277,13 @@ function performUnitOfWork(fiber) {
 
 ```jsx
 function performUnitOfWork(fiber) {
-  if(!fiber.dom) {
-    fiber.dom = createDom(fiber)
+  if (!fiber.dom) {
+    fiber.dom = createDom(fiber);
   }
-  if(fiber.parent) {
-    fiber.parent.dom.appendChild(fiber.dom)
+  if (fiber.parent) {
+    fiber.parent.dom.appendChild(fiber.dom);
   }
-  
-  
+
   // TODO create new fibers
   // TODO return next unit of work
 }
@@ -320,16 +319,6 @@ function performUnitOfWork(fiber) {
     prevSibling = newFiber;
   }
   // TODO return next unit of work
-    if (fiber.child) {
-    return fiber.child
-  }
-  let nextFiber = fiber
-  while (nextFiber) {
-    if (nextFiber.sibling) {
-      return nextFiber.sibling
-    }
-    nextFiber = nextFiber.parent
-  }
 }
 ```
 
@@ -344,7 +333,7 @@ function performUnitOfWork(fiber) {
 ```jsx
 function performUnitOfWork(fiber) {
   // 省略前面的代码
-  
+
   if (fiber.child) {
     return fiber.child;
   }
@@ -358,3 +347,76 @@ function performUnitOfWork(fiber) {
 }
 ```
 
+## Render and Commit Phases
+
+```jsx
+function performUnitOf(fiber) {
+  // 省略前面的代码
+
+  if (fiber.parent) {
+    fiber.parent.dom.appendChild(fiber.dom);
+  }
+}
+```
+
+如上所示，我们在对每个元素进行处理时，都会向`dom`添加一个新的节点
+
+而且，由于使用`requestIdleCallback`进行调度的原因，在我们完成整棵树的渲染工作前，浏览器可能会中断我们的工作。
+
+在这种情况下，用户会看到一个不完整的界面，这是我们不希望的
+
+所以我们从将提交`DOM`的逻辑抽离，在完成整个树的渲染工作后再提交`DOM`（称为 Commit phases）
+
+并且，我们将会追踪`fiber tree`的`root fiber`，称之为 work in progress root -- `wipRoot`
+
+```jsx
+function render(element, container) {
+  wipRoot = {
+    dom: container,
+    props: {
+      children: [element],
+    },
+  };
+  nextUnitOfWork = wipRoot;
+}
+
+let nextUnitOfWork = null;
+let wipRoot = null;
+```
+
+一旦我们完成所有工作，我们就将`fiber tree`提交给`DOM`
+
+```jsx
+function workLoop(deadline) {
+  let shouldYield = false;
+  while (nextUnitOfWork && !shouldYield) {
+    nextUnitOfWork = performUnitOfWork(nextUnitOfWork);
+    shouldYield = deadline.timeRemaining() < 1;
+  }
+
+  if (!nextUnitOfWork && wipRoot) {
+    // 提交阶段
+    commitRoot();
+  }
+
+  requestIdleCallback(workLoop);
+}
+```
+
+在`commitRoot`函数中，我们递归地向`DOM`中插入节点
+
+```jsx
+function commitRoot() {
+  commitWork(wipRoot);
+  wipRoot = null;
+}
+function commitWork(fiber) {
+  if (!fiber) {
+    return;
+  }
+  const domParent = fiber.parent.dom;
+  domParent.appendChild(fiber.dom);
+  commitWork(fiber.child);
+  commitWork(fiber.sibling);
+}
+```
