@@ -415,8 +415,114 @@ function commitWork(fiber) {
     return;
   }
   const domParent = fiber.parent.dom;
-  domParent.appendChild(fiber.dom);
+  domParent.appendChild(fiber.dom); // 我们只有向 DOM 添加节点，更新和删除呢？见下一节
   commitWork(fiber.child);
   commitWork(fiber.sibling);
 }
 ```
+
+## Reconciliation
+
+目前为止，我们只是向 DOM 中添加节点，但是更新和删除节点呢？
+
+这就是我们接下来要做的，我们需要将在`render`函数收到的`elements`与提交给`dom`的最后一个`fiber tree`做比较
+
+我们添加一个全局变量`currentRoot`，保存在完成`commit`阶段后提交到`dom`的最后一个`fiber tree`，并且在每一个`fiber`中添加`alternate`属性，指向前一个`commit`阶段的`fiber`
+
+```jsx
+function commitRoot() {
+	commitWork(wipRoot.child);
+	currentRoot = wipRoot; // 完成 commit 后保存引用
+	wipRoot = null;
+}
+
+function commitWork(fiber) {
+	if (!fiber) {
+		return;
+	}
+	const domParent = fiber.parent.dom;
+	domParent.appendChild(fiber.dom);
+	commitWork(fiber.child);
+	commitWork(fiber.sibling);
+}
+
+function render(element, container) {
+	wipRoot = {
+		dom: container,
+		props: {
+			children: [element],
+		},
+		alternate: currentRoot, // 上次 commit 的 fiber
+	};
+	nextUnitOfWork = wipRoot;
+}
+
+let nextUnitOfWork = null;
+let currentRoot = null; // 上次渲染的 fiber tree
+let wipRoot = null;
+```
+
+然后我们对`performUnitOfWork`函数进行重构，添加一个`reconcileChildren`函数，对原先`create new fiber`的代码进行重构
+
+```jsx
+function performUnitOfWork(fiber) {
+	if (!fiber.dom) {
+		fiber.dom = createDom(fiber);
+	}
+
+	const elements = fiber.props.children;
+	reconcileChildren(fiber, elements); // reconcileChildren
+
+	if (fiber.child) {
+		return fiber.child;
+	}
+	let nextFiber = fiber;
+	while (nextFiber) {
+		if (nextFiber.sibling) {
+			return nextFiber.sibling;
+		}
+		nextFiber = nextFiber.parent;
+	}
+}
+```
+
+我们在`reconcileChildren`函数中对比旧的`fiber`和新的`elements`
+
+```jsx
+function reconcileChildren(wipFiber, elements) {
+	oldFiber = wipFiber.alternate && wipFiber.alternate.child;
+	let prevSibling = null;
+
+	while (index < elements.length || oldFiber != null) {
+		const element = elements[index];
+		let newFiber = null;
+		const sameType = oldFiber && element && element.type == oldFiber.type;
+
+		if (sameType) {
+			// TODO update the node
+		}
+		if (element && !sameType) {
+			// TODO add this node
+		}
+		if (oldFiber && !sameType) {
+			// TODO delete the oldFiber's node
+		}
+
+		// 遍历 fiber
+		// 因为 fiber 只有一个 child 节点，其余 child 节点被视作 child 节点的 sibling 节点。
+		// 因此这样遍历
+		if (oldFiber) oldFiber = oldFiber.sibling;
+
+		// 第一个child才可以作为child，其他的就是sibling
+		if (index === 0) {
+			wipFiber.child = newFiber;
+		} else {
+			prevSibling.sibling = newFiber;
+		}
+
+		prevSibling = newFiber;
+		index++;
+	}
+}
+```
+
