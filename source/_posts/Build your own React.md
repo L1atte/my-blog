@@ -486,7 +486,21 @@ function performUnitOfWork(fiber) {
 }
 ```
 
-我们在`reconcileChildren`函数中对比旧的`fiber`和新的`elements`
+在`reconcileChildren`函数中对比旧的`fiber`和新的`elements`
+
+我们同时迭代旧的`fiber`的子节点和新元素的子节点
+
+我们先忽略同时迭代两者的逻辑，只关心最重要的东西：`oldFiber`和`element`。`element`是我们即将要渲染到 DOM 的东西，而`oldFiber`是上次渲染的内容
+
+我们需要对它们进行比较，看看是否有任何需要应用于DOM的变化。
+
+使用`type`来比较它们
+
+- 如果类型相同，我们保持旧`fiber`的引用，然后仅更新`props`
+- 如果类型不同、存在新`element`，意味着需要创建新的`dom`节点
+- 如果类型不同、不存在新`element`、有旧`fiber`，意味着需要删除旧的`dom`节点
+
+> 实际上，React 也是用了 key，这会让 diff 算法更准确。例如：它可以检测 children 的位置变化
 
 ```jsx
 function reconcileChildren(wipFiber, elements) {
@@ -496,7 +510,7 @@ function reconcileChildren(wipFiber, elements) {
 	while (index < elements.length || oldFiber != null) {
 		const element = elements[index];
 		let newFiber = null;
-		const sameType = oldFiber && element && element.type == oldFiber.type;
+		const sameType = oldFiber && element && element.type === oldFiber.type;
 
 		if (sameType) {
 			// TODO update the node
@@ -523,6 +537,154 @@ function reconcileChildren(wipFiber, elements) {
 		prevSibling = newFiber;
 		index++;
 	}
+}
+```
+
+当旧 fiber 和新元素有着相同的类型的时候，我们创建一个新 fiber，它保持旧 fiber 的 dom 节点
+
+我们还为 fiber 添加了一个新属性：`effectTag`，我们将在后面的 commit phase 使用这个属性
+
+```javascript
+// update the node
+if (sameType) {
+	newFiber = {
+		type: oldFiber.type,
+		props: element.props,
+		dom: oldFiber.dom,
+		parent: wipFiber,
+		alternate: oldFiber,
+		effectTag: "UPDATE",
+	};
+}
+```
+
+对于元素需要一个新的 dom 节点的情况，我们使用 `PLACEMENT`的`effectTag`来标记他
+
+```jsx
+// add the node
+if (!sameType && element) {
+	newFiber = {
+		type: element.type,
+		props: element.props,
+		dom: null,
+		parent: wipFiber,
+		alternate: null,
+		effectTag: "PLACEMENT",
+	};
+}
+```
+
+对于需要删除节点的情况，由于我们没有新的元素，所以把`effectTag`加在旧 fiber 上
+
+但是当我们将 fiber tree 提交到 dom 时，我们将会从 work in progress root (wipRoot) 开始，那里没有旧 fiber
+
+
+
+```jsx
+if (!sameType && oldFiber) {
+	oldFiber.effectTag = "DELETION";
+	deletions.push(oldFiber);
+}
+```
+
+所以我们添加一个全局变量`deletions`来记录要删除的 fiber
+
+```jsx
+function render(element, container) {
+	wipRoot = {
+		dom: container,
+		props: {
+			children: [element],
+		},
+		alternate: currentRoot,
+	};
+	deletions = [];
+	nextUnitOfWork = wipRoot;
+}
+
+let nextUnitOfWork = null;
+let currentRoot = null;
+let wipRoot = null;
+let deletions = null; // 记录要删除的 fiber
+```
+
+然后，当我们向 dom 提交变化的时候，会使用 `deletions`
+
+```jsx
+function commitRoot() {
+  deletions.forEach(commitWork)
+  commitWork(wipRoot.child)
+  currentRoot = wipRoot
+  wipRoot = null
+}
+```
+
+现在，让我们在`commitWork`函数中添加处理`effectTag`的逻辑
+
+```jsx
+function commitWork(fiber) {
+	if (!fiber) {
+		return;
+	}
+	const domParent = fiber.parent.dom;
+	if (fiber.effectTag === "PLACEMENT" && fiber.dom != null) {
+		domParent.appendChild(fiber.dom);
+	} else if (fiber.effectTag === "UPDATE" && fiber.dom != null) {
+		updateDom(fiber.dom, fiber.alternate.props, fiber.props);
+	} else if (fiber.effectTag === "DELETION") {
+		domParent.removeChild(fiber.dom);
+	}
+
+	commitWork(fiber.child);
+	commitWork(fiber.sibling);
+}
+function updateDom(dom, prevProps, nextProps) {
+  // TODO
+}
+```
+
+在`UPDATE`的时候，我们需要删除已经消失的属性、并且设置新增或者修改的属性
+
+```jsx
+function updateDom(dom, prevProps, nextProps) {
+	const isEvent = key => key.startsWith("on");
+	// 删除已经没有的props
+	Object.keys(prevProps)
+		.filter(key => key != "children" && !isEvent(key))
+		// 不在nextProps中
+		.filter(key => !key in nextProps)
+		.forEach(key => {
+			// 清空属性
+			dom[key] = "";
+		});
+
+	// 添加新增的属性/修改变化的属性
+	Object.keys(nextProps)
+		.filter(key => key !== "children" && !isEvent(key))
+		// 不再prevProps中
+		.filter(key => !key in prevProps || prevProps[key] !== nextProps[key])
+		.forEach(key => {
+			dom[key] = nextProps[key];
+		});
+
+	// 删除事件处理函数
+	Object.keys(prevProps)
+		.filter(isEvent)
+		// 新的属性没有，或者有变化
+		.filter(key => !key in nextProps || prevProps[key] !== nextProps[key])
+		.forEach(key => {
+			const eventType = key.toLowerCase().substring(2);
+			dom.removeEventListener(eventType, prevProps[key]);
+		});
+
+	// 添加新的事件处理函数
+	Object.keys(nextProps)
+		.filter(isEvent)
+		.filter(key => prevProps[key] !== nextProps[key])
+		.forEach(key => {
+			const eventType = key.toLowerCase().substring(2);
+			dom.addEventListener(eventType, nextProps[key]);
+		});
 }
 ```
 
