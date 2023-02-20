@@ -72,7 +72,7 @@ Link: </css/styles.css>; rel=preload; as=style，
 - **改进的握手**：是连接建立速度的改进；
 - **连接迁移**：减少必要的重新连接次数，从而减少会话之间的连接建立和数据丢失，从而提高速度；
 
-[Real Streams](https://valerii-udodov.com/posts/http3/#real-streams)
+### [Real Streams](https://valerii-udodov.com/posts/http3/#real-streams)
 
 因为在 TCP 中，所有数据包都在“线路”中传输，如果一个数据包变慢或丢失，则整个“线路”必须等待慢速/丢失的数据包回到其位置并继续前进。尽管 TCP 有流的概念，但它们不是真正的流，而是模拟它们的抽象。多个文件被分解成数据包，数据包被分组在小帧中，但无论如何都通过“行”中的单个流。
 
@@ -98,13 +98,13 @@ QUIC 并没有真正解决 HoL 阻塞问题，而是将它移到了另一个地�
 
 HoL 阻塞可能发生在流级别。因为流顺序仍然很重要，所以您不能重新排序或丢失数据包。因此，如果流中有一个慢家伙，流将无法继续，必须等待……但在这种情况下，它不会阻塞其他流。一旦烦人的数据包问题得到解决，流就会恢复。
 
-[握手](https://valerii-udodov.com/posts/http3/#handshake)
+### [握手](https://valerii-udodov.com/posts/http3/#handshake)
 
 QUIC 至少需要少一次握手。新连接只需要一次握手，恢复连接不需要握手。这使得 QUIC 1RTT 用于新连接，0RTT 用于恢复。
 
 ![握手](https://valerii-udodov.com/images/posts/http3/handshaking.png)
 
-[安全](https://valerii-udodov.com/posts/http3/#security)
+### [安全](https://valerii-udodov.com/posts/http3/#security)
 
 HTTP 是纯文本协议。它只是通过电线（或无线电波）发送文本。HTTPS 中的 S 代表 Secure。通过使用 HTTPS，我们指示浏览器使用 TLS 协议参与通信。TLS 协议将使用高级数学算法加密我们的数据。这样可以确保即使数据可能被第三方拦截，也没有用。现在，Internet 上的大多数 Web 资源都使用 HTTPS。
 即使现代浏览器坚持使用 HTTPS，我们仍然可以避免它。
@@ -120,5 +120,5 @@ HTTP 是纯文本协议。它只是通过电线（或无线电波）发送文本
 ## 参考
 
 - [Evolution of HTTP](https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Evolution_of_HTTP)
-- [HTTP/3. All you need to know.](HTTP/3. All you need to know.)
+- [HTTP/3. All you need to know.](https://valerii-udodov.com/posts/http3/)
 - [HTTP Messages](https://developer.mozilla.org/en-US/docs/Web/HTTP/Messages)
