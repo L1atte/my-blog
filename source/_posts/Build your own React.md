@@ -688,3 +688,116 @@ function updateDom(dom, prevProps, nextProps) {
 }
 ```
 
+## Function Components
+
+接下来我们添加对函数式组件的支持
+
+**函数式组件相当于包裹了函数的 jsx 元素**
+
+```jsx
+function App(props) {
+  return <h1>Hi {props.name}</h1>
+}
+const element = <App name="foo" />
+```
+
+首先我们将这段 jsx 代码转换成 js 的形式
+
+```jsx
+function App(props) {
+	return Didact.createElement("h1", null, "Hi ", props.name);
+}
+const element = Didact.createElement(App, {
+	name: "foo",
+});
+```
+
+Function components 有两点不同
+
+1. 来自函数式组件的 fiber 没有 dom 节点（缺少和 dom 类型对应的 fiber.type 字段，因为 fiber.type 实际是一个函数）
+2. `children`来自于运行中的函数而不是`props`
+
+因此，我们在`performUnitOfWork`函数中检查 fiber 是否是一个函数，根据这一点，我们选择不同的更新函数
+
+```jsx
+function performUnitOfWork(fiber) {
+  // 根据 fiber.type 决定不同的更新函数
+	const isFunctionComponent = fiber.type instanceof Function;
+	if (isFunctionComponent) updateFunctionComponent(fiber);
+	else updateHostComponent(fiber);
+
+	// ......rest code
+}
+```
+
+在`updateHostCompenent`函数中我们的做法与之前一样
+
+```jsx
+function updateHostComponent(fiber) {
+	// add dom node
+	if (!fiber.dom) fiber.dom = createDom(fiber);
+
+	// 新建 newFiber，构建 fiber tree
+	reconcileChildren(fiber, fiber.props.children);
+}
+```
+
+然后我们在`updateFunctionComponent`函数中获取`children`
+
+```jsx
+function updateFunctionComponent(fiber) {
+	// 这里 fiber.type 是一个函数
+	const children = [fiber.type(fiber.props)];
+
+	// 新建 newFiber，构建 fiber tree
+	reconcileChildren(fiber, children);
+}
+```
+
+用之前的例子解释一下上面这段代码，`fiber.type`相当于`App` function，当我们调用它的时候会返回`h1`元素
+
+然后，一旦有了`children`，`reconciliation`函数也能同样运作，所以我们不需要改变什么
+
+
+
+我们还需要改造`commitWork`函数
+
+由于存在没有`dom`节点的 fiber，我们需要改变两点
+
+首先，`const domParent = fiber.parent.dom`这段代码不再可靠——因为函数式组件没有 dom。所以，为了找到`dom`节点的父节点，我们需要遍历 fiber tree 直到找到一个带有 dom 的 fiber
+
+```jsx
+function commitWork(fiber) {
+  //...
+  
+	// 由于函数式组件没有 dom 的原因，所以需要不断向上遍历找到含有 dom 的 fiber
+	let domParentFiber = fiber.parent;
+	while (!domParentFiber.dom) {
+		domParentFiber = domParentFiber.parent;
+	}
+	const domParent = domParentFiber.dom;
+  
+  //...
+}
+```
+
+其次，当我们移除 dom 节点的时候，也需要递归地遍历 fiber 来找到有 dom 节点的子节点
+
+```jsx
+function commitWork(fiber) {
+  //...
+  else if (fiber.dom && fiber.effectTag === "DELETION") {
+		commitDeletion(fiber, domParent);
+	}
+  //...
+}
+
+function commitDeletion(fiber, domParent) {
+	if (fiber.dom) {
+		domParent.removeChild(fiber.dom);
+	} else {
+		commitDeletion(fiber.child, domParent);
+	}
+}
+```
+
