@@ -221,3 +221,58 @@ core.ignoredTokens = new Set([KotlinParser.LPAREN, KotlinParser.SEMICOLON]);
 然后， `collectCandidates` 将既不会返回 LPAREN ，也不会返回 SEMICOLORN
 
 接下来，我们会完成建议 `identifier`
+
+## 建议 `identifier`
+
+如果我们收集两个信息，就可以确定哪些标识符可以放在光标下面
+
+- 哪一种类型的标识符可以插入当前位置
+- 哪些标识符是当前上下文中可见
+
+让我们来看看如何计算每个集合
+
+## 哪一种类型的标识符（变量）可以插入当前位置？
+
+一般来说，在源代码中的任何位置，只有某些种类的标识符才是有效的。
+
+比如，在编写 1 + ... 这样的表达式时，我们可以插入一个变量、一个函数或者一个方法的名称，但不能插入一个类型或者命名空间的名称
+
+我们怎么样才能计算出哪种标识符是有效的？如果我们正在集成一个现有的解释器、编译器或者转译器，我们可能已经又了在解析源代码后处理和分析的工具，而且我们可以利用这些工具来达到我们的目的。请记住，这些工具比如对包含错误节点的解析树有很好的适应性，这些错误节点是由畸形的输入造成的
+
+然而，如果我们不能轻易地使用我们已经拥有的或知道如何计算的信息，或者如果我们只有一个解析器（如我们的例子），我们仍然可以使用语法，结合antlr4-c3，为我们带来好处。
+
+事实上，`antlr4-c3`返回的候选建议（candidate suggestions）既包括了 token 也包括了 规则（rules）。到目前为止，我们只是考虑了 token，现在是时候来关注 rule 了
+
+从技术上来讲，只要我们想做，我们可以引用某个类的静态成员。我们简化这一过程
+
+## Rules!（规则）
+
+对于 antlr4-c3，如果你什么都不做， `antlr4-c3`就不会生成 rules map。但是，我们也可以指示具体规则，当我们从 `simpleIdentifier`开始
+
+```js
+core.preferredRules = new Set([ KotlinParser.RULE_simpleIdentifier ]);
+```
+
+`simpleIdentifier`是Kotlin解析器语法中的一条规则。它包装了标识符解析器规则，允许人们使用一些 "软关键字 "作为标识符。软关键字是一些词，比如 "抽象 "或 "注释"，它们在某些语句中使用时才是关键字。除此以外，我们可以把它们作为名称使用，例如，变量的名称。
+
+现在，当我们收到完成度候选人时，我们可以检查我们是否可以建议一个标识符：
+
+```js
+if(candidates.rules.has(KotlinParser.RULE_simpleIdentifier)) {
+    completions.push(...suggestIdentifiers());
+}
+```
+
+我们不要忘记，我们仍然不想建议使用 "标识符 "这个字面关键词：
+
+```js
+candidates.tokens.forEach((_, k) => {
+    if(k == KotlinParser.Identifier) {
+        //Skip, we’ve already handled it above
+    } else if(...) { ... } else {
+        completions.push(parser.vocabulary.getSymbolicName(k).toLowerCase());
+    }
+});
+```
+
+还要注意的是，我们不能通过告诉引擎忽略`Identifier`标记来避免上面的if语句。如果我们这样做，它也会停止返回simpleIdentifier规则，因为antlr4-c3的工作方式。
