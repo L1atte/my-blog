@@ -375,3 +375,72 @@ protected withScope<T>(tree: ParseTree, type: new (...args: any[]) => ScopedSymb
 我们从addNewSymbolOfType方法中复制了类型参数的复杂签名，我们调用该方法将新符号（范围）添加到当前符号（范围）中。
 
 注意，我们还跟踪了范围的上下文。在我们的例子中，这是解析树中范围生效的部分：函数定义。我们将在后面使用它，以提供范围化的建议。
+
+## 将两者结合
+
+现在我们跟踪了标识符的范围，我们可以用它来提供适当的建议。我们将重写我们的 suggestVariables 方法，以利用我们在上一步中计算的范围：
+
+```js
+function suggestVariables(symbolTable: SymbolTable, context: ParseTree) {
+    const scope = getScope(context, symbolTable);
+    let symbols: Symbol[];
+    if(scope instanceof ScopedSymbol) { //Local scope
+        symbols = getAllSymbolsOfType(scope, VariableSymbol);
+    } else { //Global scope
+        symbols = symbolTable.getSymbolsOfType(VariableSymbol);
+    }
+    return symbols.map(s => s.name);
+}
+```
+
+我们将很快展示getAllSymbolsOfType的实现，但首先要注意，现在 suggestVariables 需要搜索符号的上下文。这个上下文基本上就是位于光标下的那部分解析树，我们可以从中确定适用的作用域。
+
+计算上下文的最佳位置是我们已经计算过的在托词下的标记的索引。因此，我们将把 computeTokenIndex...方法改为 computeTokenPosition...，并让它们同时返回索引和上下文：
+
+```js
+export type TokenPosition = { index: number, context: ParseTree };
+export function computeTokenPosition(parseTree: ParseTree, caretPosition: CaretPosition): TokenPosition {
+    //...
+}
+```
+
+而在computeTokenPositionOfTerminalNode中，我们现在将返回一个TokenPosition：
+
+```js
+return { index: parseTree.symbol.tokenIndex, context: parseTree };
+```
+
+现在我们都准备好了，我们可以看看如何确定适用的范围和那里可见的所有变量名。
+
+首先，为了确定作用域，我们利用antlr4-c3的符号表对作用域的支持，从我们的上下文开始，沿着解析树向上走，直到找到一个匹配的作用域：
+
+```js
+function getScope(context: ParseTree, symbolTable: SymbolTable) {
+    if(!context) {
+        return undefined;
+    }
+    const scope = symbolTable.symbolWithContext(context);
+    if(scope) {
+        return scope;
+    } else {
+        return getScope(context.parent, symbolTable);
+    }
+}
+```
+
+然后，我们将通过从最接近的范围开始，向上计算可见变量的集合：
+
+```js
+function getAllSymbolsOfType<T extends Symbol>(scope: ScopedSymbol, type: new (...args: any[]) => T): T[] {
+    let symbols = scope.getSymbolsOfType(type);
+    let parent = scope.parent;
+    while(parent && !(parent instanceof ScopedSymbol)) {
+        parent = parent.parent;
+    }
+    if(parent) {
+        symbols.push(...getAllSymbolsOfType(parent as ScopedSymbol, type));
+    }
+    return symbols;
+}
+```
+
