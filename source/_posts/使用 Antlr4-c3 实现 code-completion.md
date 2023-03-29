@@ -275,4 +275,103 @@ candidates.tokens.forEach((_, k) => {
 });
 ```
 
-还要注意的是，我们不能通过告诉引擎忽略`Identifier`标记来避免上面的if语句。如果我们这样做，它也会停止返回simpleIdentifier规则，因为antlr4-c3的工作方式。
+还要注意的是，我们不能通过告诉引擎忽略`Identifier`标记来避免上面的 if 语句。如果我们这样做，它也会停止返回simpleIdentifier规则，因为antlr4-c3的工作方式。
+
+## 符号表
+
+到目前为止，我们还有一个问题：我们如果知道哪些变量在光标下的上下文是可见的？
+
+编译器或者其他翻译器通常采用一种叫做符号表的数据结构来保存关于符号（标识符）的信息，如名称、范围、类型和其他特征。我们可以建立并使用这样的结构来跟踪哪些变量是可见的，从而给出合理的建议
+
+幸运的是，antlr4-c3 提供了开箱即用的符号表实现，它是相当通用的，可以适用于很多语言。特别是，它已经有了代表几种符号的类（变量、函数和命名空间等）和一个我们可以拓展的类层次结构。我们可以用它来模拟嵌套作用域，并将每一个符号与解析树中的节点联系起来
+
+## 通过 Visitor 建立符号表
+
+我们可以通过使用 parse tree 的 visitor 来填充一个符号表。在这里，我们不会展示详细的实现，但会提供一个简单的 visitor，它只处理基本的上下文，以供参考
+
+visitor 可以利用 antlr4 提供和生成的类和接口
+
+```js
+export class SymbolTableVisitor extends AbstractParseTreeVisitor<SymbolTable> implements KotlinParserVisitor<SymbolTable>
+```
+
+visitor 返回一个符号表，我们给这个对象比 visitor 更长的生命周期，使得 visitor 不能重复使用
+
+```js
+protected defaultResult(): SymbolTable {
+    return this.symbolTable;
+}
+```
+
+这只是设计选择之一，而不是为 visitor 的每一次运行都创建一个新的符号表
+
+我们将在构造函数中初始化符号表，并且使用一个字段`scope`来跟踪当前的词法上下文
+
+```js
+constructor(
+    protected readonly symbolTable: SymbolTable = new SymbolTable("", {}),
+    protected scope = symbolTable.addNewSymbolOfType(ScopedSymbol, undefined)) {
+    super();
+}
+```
+
+我们将在下一节讨论上下文的问题
+
+现在，关键的部分来了：我们必须在发现变量声明的时候记录它们。我们通过提供一个 `visitVariableDeclaration` 的回调实现
+
+```JS
+visitVariableDeclaration = (ctx: VariableDeclarationContext) => {
+   this.symbolTable.addNewSymbolOfType(VariableSymbol, this.scope, ctx.simpleIdentifier().text);
+   return this.visitChildren(ctx);
+};
+```
+
+我们现在可以使用这个简单的符号表来提供变量名建议
+
+```js
+if(candidates.rules.has(KotlinParser.RULE_variableRead)) {
+    let symbolTable = new SymbolTableVisitor().visit(parseTree);
+    completions.push(...suggestVariables(symbolTable));
+}
+```
+
+下面是 `suggestVariables` 函数的实现
+
+```js
+function suggestVariables(symbolTable: SymbolTable) {
+    return symbolTable.getNestedSymbolsOfType(VariableSymbol).map(s => s.name);
+}
+```
+
+## 处理上下文中的变量
+
+然而，上面的例子根本没有处理范围问题。我们建议程序中的所有变量名在变量名可能出现的任何一点上都可以使用，不管语言的范围规则如何。
+
+与符号表一样，如果我们有一个解释器或编译器，并且可以重复使用其中的部分内容，我们可能已经有代码来计算标识符的范围。但是，如果我们没有，本节将帮助我们建立它。
+
+所以，现在让我们看看我们可能如何处理范围问题。在这里，我们将只为每个函数声明引入一个新的作用域，以演示这个想法：
+
+```js
+visitFunctionDeclaration = (ctx: FunctionDeclarationContext) => {
+    return this.withScope(ctx, RoutineSymbol, [ctx.identifier().text], () => this.visitChildren(ctx));
+};
+```
+
+antlr4-c3 的符号表中的符号也可以作为作用域。事实上，它们形成了一个层次结构，所以很容易创建一个从最具体到最不具体的作用域链，并在我们遍历树的过程中对它们进行跟踪：
+
+```js
+protected withScope<T>(tree: ParseTree, type: new (...args: any[]) => ScopedSymbol, args: any[], action: () => T): T {
+    const scope = this.symbolTable.addNewSymbolOfType(type, this.scope, ...args);
+    scope.context = tree;
+    this.scope = scope;
+    try {
+        return action();
+    } finally {
+        this.scope = scope.parent as ScopedSymbol;
+    }
+}
+```
+
+我们从addNewSymbolOfType方法中复制了类型参数的复杂签名，我们调用该方法将新符号（范围）添加到当前符号（范围）中。
+
+注意，我们还跟踪了范围的上下文。在我们的例子中，这是解析树中范围生效的部分：函数定义。我们将在后面使用它，以提供范围化的建议。
