@@ -1,7 +1,7 @@
 ---
 title: 使用 Antlr4-c3 实现 code-completion
 date: 2023/3/27
-updated: 2023/3/27
+updated: 2023/3/30
 tags: 
 - IDE
 - Antlr4
@@ -444,3 +444,115 @@ function getAllSymbolsOfType<T extends Symbol>(scope: ScopedSymbol, type: new (.
 }
 ```
 
+## 关于上下文的解释
+
+我们的上下文实现只是一个起步，我们还没有处理几个现实的问题，包括：
+
+来自其他文件的符号：在我们的语言中，我们可能会参考来自我们导入的库的名称，或者来自超类的名称，等等。在这里，我们一次只处理一个文件。
+
+索引：我们已经建立了形成线性嵌套层次的作用域模型。然而，在一个有许多交叉引用的源文件的项目中，作用域很容易分支成一棵大树，而线性搜索会变得效率太低。真实世界的IDE为我们的源代码、库、平台代码等建立索引。
+
+局部变量：许多语言允许在一个较窄的作用域中重新声明一个变量，从而在一些封闭的作用域中对同名的变量进行阴影。在这种情况下，我们的代码会返回相同的名字两次。
+
+排序：我们没有以任何方式明确地对结果进行排序--它们被隐式地从最具体到最不具体地进行排序。这可能是好的，但是我们可能想按字母顺序来展示它们，例如。
+
+如何处理这些和其他的改进，就留给读者吧。
+
+## 部分匹配
+
+通常情况下，当我们实现 code-completion 时，我们已经输入了关键词或者标识符的一部分，我们会希望编辑器能为我们完成它
+
+例如，考虑下面的 kotlin 语句
+
+```kotlin
+fun test() {
+    try {
+        doSomething()
+    } ca｜ // 光标
+}
+```
+
+在这里，我们使用 | 表示光标所处的位置，当输入了字母 'ca' 后，我们希望引擎能够建议 'catch' 这个关键词，而不是其他不以 'ca' 开头的关键词，例如 'finally'。
+
+然而，到目前为止，我们所写的代码并没有考虑到用户可能已经输入的字符，现在让我们看看如何利用这些信息来改进
+
+首先，连同光标下的标记位置，我们返回需要匹配的文本：
+
+```js
+export type TokenPosition = { index: number, context: ParseTree, text: string };
+```
+
+然后，在 computeTokenPositionTerminalNode 中：
+
+```js
+return {
+    index: parseTree.symbol.tokenIndex,
+    context: parseTree,
+    text: parseTree.text.substring(0, caretPosition.column - start)
+};
+```
+
+可以看到，要匹配的文本只是 token 的一部分。或者，我们可以永远选择 token 的全部文本。最好的策略是取决于用户的期望和编辑器的约定。总之，当我们希望代码补全的时候，大部分情况关心点是在 token 的末尾，所以区别并不大
+
+## 过滤候选建议
+
+现在，让我们来看看计算代码建议的时候如何利用这些新信息。我们希望当前 token 不是被排除的类型的时候，才执行部分匹配，因为我们不希望与封闭的括号或者分号匹配：
+
+```js
+const isIgnoredToken =
+    position.context instanceof TerminalNode &&
+    ignored.indexOf(position.context.symbol.type) >= 0;
+const textToMatch = isIgnoredToken ? '' : position.text;
+```
+
+考虑到这一点，让我们来过滤我们建议的关键词：
+
+```js
+candidates.tokens.forEach((_, k) => {
+    let candidate;
+    if(k == KotlinParser.Identifier) {
+        //Skip, we’ve already handled it above
+    } /* else if(...) { //Tokens with names that don’t match with a keyword
+        candidate = ...;
+    }*/ else {
+        candidate = parser.vocabulary.getSymbolicName(k).toLowerCase();
+    }
+    if(candidate) {
+        maybeSuggest(candidate, textToMatch, completions);
+    }
+});
+```
+
+我们定一个新的函数 `maybeSuggest` 如下所示
+
+```js
+function maybeSuggest(completion: string, text: string, completions: any[]) {
+    if (tokenMatches(completion, text)) {
+        completions.push(completion);
+    }
+}
+```
+
+其中，它会调用 `tokenMatches` 函数
+
+```js
+function tokenMatches(completion: string, text: string): boolean {
+    return text.trim().length == 0 ||
+           completion.toLowerCase().startsWith(text.toLowerCase());
+}
+```
+
+可以看到，如果只过滤那些有实际文本的标记。如果一个标记没有文本或者是空字符串，那我们认为它是匹配的
+
+同样的，建议变量时，我们只在 `variableRead` 表达式中执行部分匹配
+
+```js
+let variable = position.context;
+while(!(variable instanceof VariableReadContext) && variable.parent) {
+    variable = variable.parent;
+}
+const textToMatch = variable ? position.text : '';
+return symbols.map(s => s.name).filter(n => tokenMatches(n, textToMatch));
+```
+
+现在我们完成了关键词和变量的部分匹配
