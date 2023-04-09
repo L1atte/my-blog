@@ -1,5 +1,5 @@
 ---
-title: Use antlr4 to implement the basic feature of IDE (eg: code-completion, syntax error, colorful language)
+title: Use antlr4 to implement the basic feature of IDE (eg:code-completion, syntax error, colorful language)
 date: 2023/4/7
 updated: 2023/4/7
 tags: 
