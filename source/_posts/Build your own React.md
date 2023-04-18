@@ -4,7 +4,7 @@ date: 2023/2/15
 updated: 2023/2/15
 tags: React
 categories: React
-description: "从零实现简易的 React"
+description: ' '
 ---
 
 递归调用 render 渲染节点的缺点：一旦开始 render，直到结束前我们都没有方法中断渲染。当节点树很大的时候，我们可能需要等待很长时间

@@ -8,7 +8,7 @@ tags:
 categories: JavaScript
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor3.jpg
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor3.jpg
-description: 研究 ES6 继承的实现方式
+description: ' '
 ---
 # 深入理解 ES6 的 Class 和 extends 底层实现原理
 

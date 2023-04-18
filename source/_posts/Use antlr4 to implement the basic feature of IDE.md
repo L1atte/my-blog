@@ -8,7 +8,7 @@ tags:
 - code-completion
 - antlr4-c3
 categories: IDE
-description: 使用 antlr4 实现 IDE 常用功能（code-completion, syntax-error, 语法着色）
+description: ' '
 ---
 
 # Use antlr4 to implement the basic feature of IDE (eg: code-completion, syntax error, colorful language)

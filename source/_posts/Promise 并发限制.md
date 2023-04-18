@@ -6,7 +6,7 @@ tags: JavaScript
 categories: JavaScript
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/弥豆子2.jpg
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/弥豆子2.jpg
-description: Promise async-pool
+description: ' '
 ---
 
 # Promise 并发限制

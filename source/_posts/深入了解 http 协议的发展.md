@@ -4,7 +4,7 @@ date: 2023/2/19
 updated: 2023/2/19
 tags: http
 categories: http
-description: "详细介绍 http/1.x, http/2, http/3 的内容"
+description: ' '
 ---
 
 ## [HTTP/1.1——标准化的协议](https://developer.mozilla.org/zh-CN/docs/Web/HTTP/Basics_of_HTTP/Evolution_of_HTTP#http1.1——标准化的协议)

@@ -8,7 +8,7 @@ tags:
 - code-completion
 - antlr4-c3
 categories: IDE
-description: 一个好的 IDE 不可缺少的就是 code-completion 功能，下面我将会使用  `antlr4-c3` 来实现这一功能。
+description: ' '
 ---
 
 # 使用 Antlr4-c3 实现 code-completion

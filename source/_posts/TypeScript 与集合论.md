@@ -6,7 +6,7 @@ tags: TypeScript
 categories: TypeScript
 top_img: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor3.jpg
 cover: https://cdn.jsdelivr.net/gh/L1atte/PicGo/img/taylor3.jpg
-description: 本文是《TypeScript and Set Theory》的中文翻译，原文链接：https://ivov.dev/notes/typescript-and-set-theory
+description: ' '
 ---
 
 # TypeScript 与集合论
